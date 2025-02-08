@@ -1,0 +1,50 @@
+#include "imports/stdlib.fc";
+
+;; =============== storage =============================
+
+;; ذخیره‌سازی داده‌ها: امتیاز کاربران و جوایز
+(int, int) load_data() inline {
+  var ds = get_data().begin_parse();
+  return (ds~load_uint(64), ds~load_uint(64)); ;; (امتیاز کاربر, جوایز جمع‌شده)
+}
+
+() save_data(int user_score, int total_rewards) impure inline {
+  set_data(begin_cell()
+    .store_uint(user_score, 64)
+    .store_uint(total_rewards, 64)
+    .end_cell());
+}
+
+;; =============== messages =============================
+
+() recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
+  if (in_msg_body.slice_empty?()) {
+    return ();
+  }
+
+  int op = in_msg_body~load_uint(32); ;; عملیات درخواستی
+  var (user_score, total_rewards) = load_data();
+
+  if (op == 1) { ;; افزایش امتیاز کاربر
+    user_score += 1;
+    save_data(user_score, total_rewards);
+  }
+
+  if (op == 2) { ;; پرداخت جوایز به برنده
+    int reward_amount = min(total_rewards, msg_value);
+    total_rewards -= reward_amount;
+    save_data(user_score, total_rewards);
+    send_raw_message(begin_cell()
+      .store_uint(0x18, 6) ;; flags
+      .store_slice(in_msg_body) ;; آدرس کاربر
+      .store_coins(reward_amount) ;; مقدار جایزه
+      .end_cell(), 64);
+  }
+}
+
+;; =============== getters =============================
+
+(int, int) get_user_data() method_id { ;; تغییر نام تابع به get_user_data
+  var (user_score, total_rewards) = load_data();
+  return (user_score, total_rewards);
+}

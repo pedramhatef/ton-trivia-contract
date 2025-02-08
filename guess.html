@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tonweb/0.0.46/tonweb.min.js"></script>
+    <script>
+        const tonweb = new TonWeb();
+        const contractAddress = "EQDSBLN7IabqOPtHJp8YDACO1-keXKWsmoWdX66CYGVumRDw"; // Replace with actual contract address
+        const minNumber = 1;
+        const maxNumber = 10;
+        let correctNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+        
+        function guessNumber(userGuess) {
+            if (userGuess === correctNumber) {
+                document.getElementById("message").innerText = "Correct! Your score has been updated.";
+                sendTransaction();
+            } else {
+                document.getElementById("message").innerText = "Wrong guess, try again!";
+            }
+        }
+        
+        async function sendTransaction() {
+            try {
+                // Here, implement the logic to send a message to the smart contract
+                console.log("Sending transaction to update score...");
+            } catch (error) {
+                console.error("Error sending transaction:", error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Guess the Number</h1>
+    <p>Pick a number between 1 and 10</p>
+    <div>
+        <button onclick="guessNumber(1)">1</button>
+        <button onclick="guessNumber(2)">2</button>
+        <button onclick="guessNumber(3)">3</button>
+        <button onclick="guessNumber(4)">4</button>
+        <button onclick="guessNumber(5)">5</button>
+        <button onclick="guessNumber(6)">6</button>
+        <button onclick="guessNumber(7)">7</button>
+        <button onclick="guessNumber(8)">8</button>
+        <button onclick="guessNumber(9)">9</button>
+        <button onclick="guessNumber(10)">10</button>
+    </div>
+    <p id="message"></p>
+</body>
+</html>
